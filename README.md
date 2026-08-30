@@ -1,18 +1,48 @@
-# Tech Challenge — Churn
+# Churn Prediction — Tech Challenge FIAP Fase 1
 
-Projeto da Fase 1 do Tech Challenge, com foco em previsão de churn de clientes.
+Projeto de Machine Learning para previsão de churn, desenvolvido com foco nos requisitos da Fase 1 do Tech Challenge e em boas práticas de engenharia de ML.
+
+## Objetivo
+
+Construir, avaliar e disponibilizar um modelo capaz de identificar clientes com maior probabilidade de churn, apoiando estratégias de retenção.
+
+## Abordagem
+
+1. Análise exploratória e entendimento do problema.
+2. Pré-processamento reproduzível com `scikit-learn Pipeline`.
+3. Comparação de **Regressão Logística**, **Random Forest** e **MLPClassifier**.
+4. Validação cruzada estratificada e avaliação em conjunto de teste.
+5. Seleção do modelo campeão considerando métricas técnicas e impacto de negócio.
+6. Persistência do pipeline completo.
+7. API REST com FastAPI (`/health` e `/predict`).
+8. Testes automatizados, documentação e Model Card.
 
 ## Estrutura
 
-- `data/` — dados do projeto (não versionar dados brutos sensíveis/volumosos)
-- `notebooks/` — EDA e experimentos
-- `src/` — código de produção
-- `tests/` — testes automatizados
-- `models/` — artefatos de modelos treinados
+```text
+├── data/
+│   ├── raw/              # dataset original (não versionado)
+│   └── processed/        # dados derivados (não versionado)
+├── notebooks/
+│   └── 01_eda_baseline.ipynb
+├── src/
+│   ├── api/              # API FastAPI e schemas
+│   ├── data/             # carregamento e validação dos dados
+│   ├── features/         # preprocessing e feature engineering
+│   ├── models/           # treino, avaliação e inferência
+│   └── utils/             # configuração e reprodutibilidade
+├── models/               # artefatos treinados (não versionados)
+├── tests/                # testes automatizados
+├── docs/                 # Model Card e documentação técnica
+├── pyproject.toml
+├── Makefile
+└── Dockerfile
+```
 
-## Etapas
+## Status
 
-1. EDA, definição de métricas e baseline com Regressão Logística.
-2. Treinamento e comparação de Random Forest e MLPClassifier.
-3. Refatoração para `src/`, testes com pytest e API FastAPI.
-4. Model Card, documentação e entrega final.
+🚧 Em desenvolvimento.
+
+## Reprodutibilidade
+
+As decisões de modelagem, seeds, divisão dos dados, métricas e versões das dependências serão registradas no projeto para permitir a reprodução dos resultados.
