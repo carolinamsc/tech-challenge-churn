@@ -21,7 +21,7 @@ EDA + validação
   ↓
 Preprocessing reproduzível
   ↓
-Logistic Regression | Random Forest | MLP
+Logistic Regression | Random Forest | MLPClassifier
   ↓
 Holdout + validação cruzada 5-fold
   ↓
@@ -36,13 +36,41 @@ FastAPI ─────────── Streamlit
 
 - Regressão Logística
 - Random Forest
-- MLPClassifier
+- MLPClassifier (Scikit-Learn)
 
-A Regressão Logística foi selecionada como modelo final por apresentar o melhor desempenho de validação cruzada entre os candidatos: ROC-AUC médio de **0,8449**, F1 médio de **0,6258** e recall médio de **0,8015**.
+A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protocolos para os três candidatos.
 
-No holdout, o modelo obteve ROC-AUC de **0,8413**, F1 de **0,6136** e recall de **0,7834** com threshold 0,50. Após a análise de pontos de corte, o threshold adotado foi **0,55**, que elevou o F1 para **0,6176** e reduziu a taxa de intervenção para **38,0%**.
+#### Validação cruzada 5-fold
 
-O threshold não é tratado como uma constante arbitrária: ele representa a política de priorização de clientes para retenção. A análise também registra precision, recall, F1 e taxa de intervenção para diferentes pontos de corte.
+| Modelo | ROC-AUC (média ± dp) | F1 | Precision | Recall |
+|---|---:|---:|---:|---:|
+| **Logistic Regression** | **0,8449 ± 0,0135** | **0,6258** | 0,5134 | **0,8015** |
+| MLPClassifier | 0,8390 ± 0,0145 | 0,5462 | **0,6718** | 0,4676 |
+| Random Forest | 0,8227 ± 0,0106 | 0,6040 | 0,5658 | 0,6479 |
+
+#### Holdout 20%
+
+| Modelo | ROC-AUC | F1 | Precision | Recall | Accuracy |
+|---|---:|---:|---:|---:|---:|
+| **Logistic Regression** | **0,8413** | **0,6136** | 0,5043 | **0,7834** | 0,7381 |
+| MLPClassifier | 0,8391 | 0,5514 | **0,6604** | 0,4733 | **0,7956** |
+| Random Forest | 0,8193 | 0,5845 | 0,5423 | 0,6337 | 0,7608 |
+
+A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC e F1 nos dois protocolos e recall superior, característica relevante para uma estratégia de retenção.
+
+### Threshold
+
+No holdout, a análise mostrou que o threshold **0,55** produz o melhor F1 entre os pontos avaliados:
+
+- F1: **0,6176**
+- Recall: **75,1%**
+- Precision: **52,4%**
+- Taxa de intervenção: **38,0%**
+- Clientes acionados: **536 de 1.409**
+
+O threshold representa uma política operacional de priorização e pode ser recalibrado conforme a capacidade da equipe e os custos reais de retenção.
+
+Os resultados completos estão versionados em [`reports/`](reports/).
 
 ## Aplicação
 
@@ -102,6 +130,9 @@ A interface ficará disponível em `http://localhost:8501`.
 │   └── utils/
 ├── models/
 ├── reports/
+│   ├── cross_validation.csv
+│   ├── model_results.csv
+│   └── threshold_analysis.csv
 ├── tests/
 ├── docs/
 ├── app.py
@@ -117,8 +148,13 @@ O projeto possui CI no GitHub Actions executando lint, testes automatizados, val
 
 O modelo final é treinado em todo o dataset após a etapa de avaliação e pode ser reconstruído sem depender de um arquivo binário versionado previamente no repositório.
 
-## Próximos passos
+## Documentação
 
-- adicionar explicabilidade individual das previsões;
-- incorporar monitoramento de drift e performance do modelo em produção;
-- avaliar calibração de probabilidades caso a aplicação evolua para uso operacional.
+- [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
+- [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
+- [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados e decisões de modelagem
+- [Plano de monitoramento](docs/MONITORING.md) — drift, performance e gatilhos de revalidação
+
+## Limitações
+
+O dataset é histórico e representa uma população específica de telecomunicações. O modelo não observa diretamente fatores externos de churn e não estabelece causalidade. O desempenho deve ser reavaliado quando novos dados rotulados estiverem disponíveis.
