@@ -1,5 +1,6 @@
 """Train and persist the selected churn classification pipeline."""
 
+import logging
 from pathlib import Path
 
 import joblib
@@ -7,6 +8,8 @@ import joblib
 from src.data.loader import load_raw_data, split_features_target
 from src.models.model_selection import build_models
 from src.utils.config import MODEL_ARTIFACT
+
+logger = logging.getLogger(__name__)
 
 
 def train_and_save(model_name: str = "logistic_regression") -> Path:
@@ -27,4 +30,5 @@ def train_and_save(model_name: str = "logistic_regression") -> Path:
 
 
 if __name__ == "__main__":
-    print(f"Saved model to {train_and_save()}")
+    logging.basicConfig(level=logging.INFO)
+    logger.info("saved model to %s", train_and_save())
