@@ -12,6 +12,38 @@ A demo permite informar o perfil de um cliente e consultar a probabilidade estim
 
 Identificar clientes com maior probabilidade de cancelamento e transformar a previsão em uma regra de priorização para ações de retenção.
 
+## Instalação e execução
+
+Requisitos: Python 3.11.
+
+```bash
+# 1. ambiente
+python -m venv .venv && source .venv/bin/activate
+
+# 2. dependências (inclui ferramentas de desenvolvimento)
+pip install -e ".[dev]"
+
+# 3. dataset (baixa a cópia pública; não é versionado no repositório)
+python -m src.data.download
+
+# 4. verificações
+make lint      # ruff
+make test      # pytest
+
+# 5. pipeline de modelagem
+python -m src.models.cross_validation    # validação cruzada 5-fold
+python -m src.models.compare             # comparação no holdout
+python -m src.models.threshold_analysis  # trade-off do threshold
+python -m src.models.train               # treina e salva models/churn_pipeline.joblib
+python -m src.monitoring.drift           # baseline de drift (PSI)
+
+# 6. aplicações
+make run                 # API em http://localhost:8000 (docs em /docs)
+streamlit run app.py     # interface + página de Monitoramento
+```
+
+Todos os comandos de validação e modelagem acima fazem parte do fluxo automatizado do CI.
+
 ## Solução
 
 ```text
@@ -131,6 +163,34 @@ uvicorn src.api.main:app --reload
 
 A documentação interativa fica disponível em `/docs`.
 
+Exemplo de chamada:
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "gender": "Female", "SeniorCitizen": 0, "Partner": "No", "Dependents": "No",
+    "tenure": 2, "PhoneService": "Yes", "MultipleLines": "No",
+    "InternetService": "Fiber optic", "OnlineSecurity": "No", "OnlineBackup": "No",
+    "DeviceProtection": "No", "TechSupport": "No", "StreamingTV": "No",
+    "StreamingMovies": "No", "Contract": "Month-to-month", "PaperlessBilling": "Yes",
+    "PaymentMethod": "Electronic check", "MonthlyCharges": 79.85, "TotalCharges": 159.7
+  }'
+```
+
+Resposta:
+
+```json
+{
+  "churn_probability": 0.8636,
+  "churn_prediction": 1,
+  "risk_level": "high",
+  "threshold": 0.55
+}
+```
+
+Enquanto `models/churn_pipeline.joblib` não existir, `/predict` responde `503`; execute `python -m src.models.train` antes.
+
 ### Docker
 
 Para executar a aplicação completa com Streamlit + FastAPI:
@@ -169,15 +229,16 @@ A interface ficará disponível em `http://localhost:8501`.
 │   ├── BUSINESS_METRIC.md
 │   ├── EDA_FINDINGS.md
 │   ├── EXPERIMENTS.md
+│   ├── ML_CANVAS.md
 │   ├── MODEL_CARD.md
 │   ├── MONITORING.md
 │   ├── README.md
 │   ├── churn_by_contract.png
 │   ├── churn_by_tenure.png
 │   ├── churn_distribution.png
+│   ├── drift_psi.png
 │   ├── numeric_by_churn.png
-│   ├── threshold_curve.png
-│   └── drift_psi.png
+│   └── threshold_curve.png
 ├── pages/
 │   └── 1_Monitoramento.py
 ├── app.py
@@ -202,12 +263,13 @@ Os resultados versionados são definidos pelo mesmo ambiente do CI:
 - pandas 2.3.3
 - seed 42
 
-As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação entre versões podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
+As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
 
 O CI também regenera os relatórios e falha quando os arquivos em `reports/` divergem do resultado gerado pelos scripts.
 
 ## Documentação
 
+- [ML Canvas](docs/ML_CANVAS.md) — proposta de valor, decisão suportada, stakeholders, métricas e riscos
 - [Notebook de EDA + baseline](notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
 - [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
