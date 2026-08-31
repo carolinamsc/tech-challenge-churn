@@ -23,9 +23,7 @@ st.caption(
 )
 
 if not REPORT.exists():
-    st.warning(
-        "Relatório de drift não encontrado. Rode `python -m src.monitoring.drift`."
-    )
+    st.warning("Relatório de drift não encontrado. Rode `python -m src.monitoring.drift`.")
     st.stop()
 
 data = pd.read_csv(REPORT)
