@@ -25,7 +25,8 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 - Validação cruzada: `5-fold`, estratificada
 - Métricas: ROC-AUC, F1, precision, recall e accuracy
 - O conjunto de teste é mantido fora do processo de seleção por CV e usado para avaliação final.
-- Ambiente das métricas: Python 3.10, scikit-learn 1.7.2, numpy 2.2.6, pandas 2.3.3.
+- Ambiente de referência dos experimentos e do CI: Python 3.11, scikit-learn 1.9.0, numpy 2.4.6, scipy 1.17.1 e pandas 2.3.3.
+- As versões das bibliotecas que influenciam os resultados estão fixadas em `pyproject.toml`.
 
 ### Validação cruzada 5-fold
 
@@ -33,7 +34,7 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 |---|---:|---:|---:|---:|
 | **Logistic Regression** | **0.8449 ± 0.0135** | **0.6258** | 0.5134 | **0.8015** |
 | MLPClassifier | 0.8390 ± 0.0145 | 0.5462 | **0.6718** | 0.4676 |
-| Random Forest | 0.8225 ± 0.0122 | 0.5398 | 0.6269 | 0.4746 |
+| Random Forest | 0.8227 ± 0.0106 | 0.6040 | 0.5658 | 0.6479 |
 
 ### Holdout 20%
 
@@ -41,9 +42,13 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0.8413** | **0.6136** | 0.5043 | **0.7834** | 0.7381 |
 | MLPClassifier | 0.8391 | 0.5514 | **0.6604** | 0.4733 | **0.7956** |
-| Random Forest | 0.8216 | 0.5416 | 0.6237 | 0.4786 | 0.7850 |
+| Random Forest | 0.8193 | 0.5845 | 0.5423 | 0.6337 | 0.7608 |
 
 A Regressão Logística foi selecionada por apresentar o melhor ROC-AUC, F1 e recall nos protocolos utilizados. Para retenção, a capacidade de capturar clientes que realmente cancelariam é especialmente relevante.
+
+### Sensibilidade do Random Forest ao ambiente
+
+Durante a validação de reprodutibilidade, verificou-se que o Random Forest apresentou diferenças de métricas entre ambientes com versões diferentes de scikit-learn/numpy, enquanto Regressão Logística e MLPClassifier reproduziram os resultados observados. Por isso, os resultados oficiais do projeto são definidos pelo ambiente pinado no repositório e validado pelo CI. Essa observação reforça a importância de fixar dependências ao reproduzir os experimentos; não significa que exista falha no algoritmo Random Forest.
 
 ## 5. Threshold e decisão operacional
 
@@ -66,6 +71,7 @@ O threshold foi escolhido a partir do trade-off entre precisão e recall. Ele re
 - Fatores externos, como mudança de preço, concorrência ou eventos pessoais, não são diretamente observáveis nas features.
 - O modelo não distingue causas de churn voluntárias de eventos como inadimplência quando essas causas não estão representadas nas variáveis.
 - O desempenho pode degradar com mudanças na população ou nas políticas comerciais.
+- Métricas de modelos como Random Forest podem variar entre versões de bibliotecas; por isso, o ambiente de execução deve ser respeitado para reproduzir os números oficiais.
 
 ## 7. Vieses identificados e riscos
 
@@ -79,9 +85,12 @@ Antes de uso em produção, recomenda-se avaliar performance, calibração e tax
 - Mudanças relevantes de preço, concorrência ou produto podem gerar data drift e reduzir a validade das previsões.
 - O modelo não possui informação suficiente para explicar churn provocado por fatores externos não observados.
 - A degradação de distribuição, calibração ou performance pode tornar o threshold atual inadequado.
+- A execução com dependências diferentes do ambiente de referência pode alterar os resultados de alguns candidatos, especialmente Random Forest.
 
 ## 9. Reprodutibilidade
 
 A seed principal e os parâmetros de split são centralizados no projeto. O pipeline de pré-processamento é serializável e aplicado de forma consistente entre treino e inferência.
 
-O GitHub Actions executa lint, testes, validação cruzada, comparação de modelos, análise de threshold e geração do artefato final. Os resultados dos experimentos são armazenados em `reports/`.
+O ambiente oficial de avaliação é Python 3.11 com scikit-learn 1.9.0, numpy 2.4.6, scipy 1.17.1 e pandas 2.3.3. As versões críticas estão fixadas no `pyproject.toml`.
+
+O GitHub Actions executa lint, testes, validação cruzada, comparação de modelos, análise de threshold e geração do artefato final. Os reports são regenerados no próprio CI e o job falha quando divergem dos arquivos versionados.
