@@ -4,12 +4,12 @@ install:
 	python -m pip install -e ".[dev]"
 
 lint:
-	ruff check src tests
-	ruff format --check src tests
+	ruff check src tests pages
+	ruff format --check src tests pages
 
 format:
-	ruff check --fix src tests
-	ruff format src tests
+	ruff check --fix src tests pages
+	ruff format src tests pages
 
 test:
 	pytest
