@@ -9,6 +9,7 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 - [EDA Findings](EDA_FINDINGS.md) — qualidade dos dados, tratamento de `TotalCharges`, hipóteses, decisões de modelagem e evidências visuais.
 - [Notebook de EDA + baseline](../notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Experimentos](EXPERIMENTS.md) — protocolos de holdout e 5-fold CV, comparação dos candidatos, escolha do modelo e análise de threshold.
+- [Trilha de desenvolvimento](COMMITS.md) — organização do histórico por etapa do desafio.
 
 ## Evidências visuais
 
