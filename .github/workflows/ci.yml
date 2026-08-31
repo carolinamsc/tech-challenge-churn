@@ -36,7 +36,7 @@ jobs:
           mkdir -p data/raw
           curl -L --fail --retry 3 \
             -o data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv \
-            https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/WA_Fn-UseC_-Telco-Customer-Churn.csv
+            https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv
       - name: Train and compare models
         run: python -m src.models.compare
       - name: Train final artifact
