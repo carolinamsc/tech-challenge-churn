@@ -25,6 +25,7 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 - Validação cruzada: `5-fold`, estratificada
 - Métricas: ROC-AUC, F1, precision, recall e accuracy
 - O conjunto de teste é mantido fora do processo de seleção por CV e usado para avaliação final.
+- Ambiente das métricas: Python 3.10, scikit-learn 1.7.2, numpy 2.2.6, pandas 2.3.3.
 
 ### Validação cruzada 5-fold
 
@@ -32,7 +33,7 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 |---|---:|---:|---:|---:|
 | **Logistic Regression** | **0.8449 ± 0.0135** | **0.6258** | 0.5134 | **0.8015** |
 | MLPClassifier | 0.8390 ± 0.0145 | 0.5462 | **0.6718** | 0.4676 |
-| Random Forest | 0.8227 ± 0.0106 | 0.6040 | 0.5658 | 0.6479 |
+| Random Forest | 0.8225 ± 0.0122 | 0.5398 | 0.6269 | 0.4746 |
 
 ### Holdout 20%
 
@@ -40,9 +41,9 @@ O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0.8413** | **0.6136** | 0.5043 | **0.7834** | 0.7381 |
 | MLPClassifier | 0.8391 | 0.5514 | **0.6604** | 0.4733 | **0.7956** |
-| Random Forest | 0.8193 | 0.5845 | 0.5423 | 0.6337 | 0.7608 |
+| Random Forest | 0.8216 | 0.5416 | 0.6237 | 0.4786 | 0.7850 |
 
-A Regressão Logística foi selecionada por apresentar o melhor ROC-AUC e F1 na validação cruzada e no holdout, além de recall superior nos dois protocolos. Para retenção, essa capacidade de capturar churners é relevante porque o objetivo é priorizar potenciais cancelamentos para intervenção.
+A Regressão Logística foi selecionada por apresentar o melhor ROC-AUC, F1 e recall nos protocolos utilizados. Para retenção, a capacidade de capturar clientes que realmente cancelariam é especialmente relevante.
 
 ## 5. Threshold e decisão operacional
 
