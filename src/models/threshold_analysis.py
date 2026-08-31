@@ -1,5 +1,6 @@
 """Threshold analysis for churn intervention decisions."""
 
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +13,7 @@ from src.utils.config import RANDOM_STATE, TEST_SIZE
 
 OUTPUT = Path("reports/threshold_analysis.csv")
 THRESHOLDS = [round(x / 100, 2) for x in range(20, 71, 5)]
+logger = logging.getLogger(__name__)
 
 
 def analyze_thresholds(model_name: str = "logistic_regression") -> pd.DataFrame:
@@ -46,9 +48,10 @@ def analyze_thresholds(model_name: str = "logistic_regression") -> pd.DataFrame:
     result = pd.DataFrame(rows)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT, index=False)
-    print(result.to_string(index=False))
+    logger.info("%s", result.to_string(index=False))
     return result
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     analyze_thresholds()
