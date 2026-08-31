@@ -1,5 +1,5 @@
-from fastapi.testclient import TestClient
 import numpy as np
+from fastapi.testclient import TestClient
 
 from src.api.main import app
 
