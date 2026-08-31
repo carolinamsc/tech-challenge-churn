@@ -1,3 +1,5 @@
+# Dependências exclusivas do deploy no Streamlit Community Cloud.
+# Para instalar o projeto completo, use: pip install -e ".[dev]"
 streamlit==1.62.0
 pandas==2.3.3
 numpy==2.4.6
