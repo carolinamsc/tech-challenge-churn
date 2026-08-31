@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
 REPORT = Path("reports/threshold_analysis.csv")
-OUTPUT = Path("docs/img/threshold_curve.png")
+OUTPUT = Path("docs/threshold_curve.png")
 CHOSEN_THRESHOLD = 0.55
 
 logger = logging.getLogger(__name__)
