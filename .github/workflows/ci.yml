@@ -32,11 +32,7 @@ jobs:
       - name: Install project
         run: python -m pip install --upgrade pip && pip install -e ".[dev]"
       - name: Download dataset
-        run: |
-          mkdir -p data/raw
-          curl -L --fail --retry 3 \
-            -o data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv \
-            https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv
+        run: python -m src.data.download
       - name: Cross-validation
         run: python -m src.models.cross_validation
       - name: Train and compare models
