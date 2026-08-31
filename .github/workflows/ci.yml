@@ -52,3 +52,5 @@ jobs:
             reports/threshold_analysis.csv
       - name: Drift baseline
         run: python -m src.monitoring.drift
+      - name: Reports must match committed values
+        run: git diff --exit-code -- reports/
