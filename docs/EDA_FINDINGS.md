@@ -35,7 +35,7 @@ As regras adotadas antes do treinamento foram:
 - `customerID` removido;
 - pré-processamento ajustado apenas nos dados de treino por `Pipeline`/`ColumnTransformer`;
 - conjunto de teste preservado para avaliação final;
-- validação cruzada executada sobre a parte de treino.
+- validação cruzada com pré-processamento reajustado dentro de cada fold, sem vazamento de transformações.
 
 ## Decisões de modelagem
 
