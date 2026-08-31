@@ -50,7 +50,11 @@ def build_logistic_pipeline() -> Pipeline:
     )
 
 
-def evaluate_classifier(model: Pipeline, X_test: pd.DataFrame, y_test: pd.Series) -> EvaluationResult:
+def evaluate_classifier(
+    model: Pipeline,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+) -> EvaluationResult:
     """Evaluate a fitted binary classifier at the default 0.5 threshold."""
     probabilities = model.predict_proba(X_test)[:, 1]
     predictions = (probabilities >= 0.5).astype(int)
