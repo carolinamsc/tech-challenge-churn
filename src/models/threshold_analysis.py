@@ -10,10 +10,10 @@ from sklearn.model_selection import train_test_split
 from src.data.loader import load_raw_data, split_features_target
 from src.models.model_selection import build_models
 from src.utils.config import RANDOM_STATE, TEST_SIZE
+from src.utils.reporting import write_report
 
 OUTPUT = Path("reports/threshold_analysis.csv")
 THRESHOLDS = [round(x / 100, 2) for x in range(20, 71, 5)]
-logger = logging.getLogger(__name__)
 
 
 def analyze_thresholds(model_name: str = "logistic_regression") -> pd.DataFrame:
@@ -46,10 +46,7 @@ def analyze_thresholds(model_name: str = "logistic_regression") -> pd.DataFrame:
         )
 
     result = pd.DataFrame(rows)
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    result.to_csv(OUTPUT, index=False)
-    logger.info("%s", result.to_string(index=False))
-    return result
+    return write_report(result, OUTPUT)
 
 
 if __name__ == "__main__":
