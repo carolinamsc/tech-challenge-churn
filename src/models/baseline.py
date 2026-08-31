@@ -1,11 +1,15 @@
 """Baseline model training and evaluation helpers."""
 
+import logging
+
 from sklearn.model_selection import train_test_split
 
 from src.data.loader import load_raw_data, split_features_target
 from src.models.evaluate import evaluate_predictions
 from src.models.model_selection import build_models
 from src.utils.config import RANDOM_STATE, TEST_SIZE
+
+logger = logging.getLogger(__name__)
 
 
 def train_baseline():
@@ -22,6 +26,6 @@ def train_baseline():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     baseline, result = train_baseline()
-    print("Baseline Logistic Regression")
-    print(result)
+    logger.info("baseline logistic regression\n%s", result)
