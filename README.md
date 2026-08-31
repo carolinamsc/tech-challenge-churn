@@ -74,9 +74,9 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8413** | **0,6136** | 0,5043 | **0,7834** | 0,7381 |
 | MLPClassifier | 0,8391 | 0,5514 | **0,6604** | 0,4733 | **0,7956** |
-| Random Forest | 0,8193 | 0,5845 | 0,5423 | 0,6337 | 0,7608 |
+| Random Forest | 0,8216 | 0,5416 | 0,6237 | 0,4786 | 0,7850 |
 
-A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC, F1 e recall nos dois protocolos. Para retenção, o recall é especialmente relevante porque representa a parcela de clientes que realmente cancelaram e foram sinalizados pelo modelo.
+A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC e F1 nos dois protocolos e recall superior, característica relevante para uma estratégia de retenção.
 
 ## Threshold
 
@@ -121,7 +121,7 @@ uvicorn src.api.main:app --reload
 
 A documentação interativa fica disponível em `/docs`.
 
-## Docker
+### Docker
 
 Para executar a aplicação completa com Streamlit + FastAPI:
 
@@ -144,27 +144,29 @@ A interface ficará disponível em `http://localhost:8501`.
 │   ├── data/
 │   ├── features/
 │   ├── models/
+│   ├── monitoring/
+│   ├── viz/
 │   └── utils/
 ├── models/
 ├── reports/
 │   ├── cross_validation.csv
 │   ├── model_results.csv
-│   └── threshold_analysis.csv
+│   ├── threshold_analysis.csv
+│   └── drift_baseline.csv
 ├── tests/
 ├── docs/
-│   ├── EDA_FINDINGS.md
-│   ├── MODEL_CARD.md
-│   ├── BUSINESS_METRIC.md
-│   ├── EXPERIMENTS.md
 │   ├── ARCHITECTURE.md
+│   ├── BUSINESS_METRIC.md
+│   ├── EDA_FINDINGS.md
+│   ├── EXPERIMENTS.md
+│   ├── MODEL_CARD.md
 │   ├── MONITORING.md
-│   ├── 01_eda_baseline.ipynb
-│   ├── churn_distribution.png
+│   ├── README.md
 │   ├── churn_by_contract.png
 │   ├── churn_by_tenure.png
+│   ├── churn_distribution.png
 │   ├── numeric_by_churn.png
-│   ├── threshold_curve.png
-│   └── threshold_curve.py
+│   └── threshold_curve.png
 ├── app.py
 ├── Dockerfile
 ├── docker-compose.yml
@@ -174,7 +176,7 @@ A interface ficará disponível em `http://localhost:8501`.
 
 ## Qualidade e reprodutibilidade
 
-O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação cruzada, comparação de modelos, análise de threshold, treino do artefato final e verificação de consistência dos reports versionados.
+O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação cruzada, comparação de modelos, análise de threshold, monitoramento de drift, treino do artefato final e verificação de consistência dos reports versionados.
 
 ### Ambiente de referência
 
@@ -187,17 +189,16 @@ Os resultados versionados são definidos pelo mesmo ambiente do CI:
 - pandas 2.3.3
 - seed 42
 
-As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
+As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação entre versões podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
 
 O CI também regenera os relatórios e falha quando os arquivos em `reports/` divergem do resultado gerado pelos scripts.
 
-O modelo final é treinado em todo o dataset após a etapa de avaliação e pode ser reconstruído sem depender de um arquivo binário versionado previamente no repositório.
-
 ## Documentação
 
+- [Notebook de EDA + baseline](notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs
 - [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
 - [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
-- [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados e decisões de modelagem
+- [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados, evidências visuais e decisões de modelagem
 - [Experimentos](docs/EXPERIMENTS.md) — protocolo de avaliação e seleção do modelo
 - [Arquitetura](docs/ARCHITECTURE.md) — componentes e modos de execução
 - [Plano de monitoramento](docs/MONITORING.md) — drift, performance e gatilhos de revalidação
