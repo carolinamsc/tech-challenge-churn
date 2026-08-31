@@ -46,7 +46,7 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8449 ± 0,0135** | **0,6258** | 0,5134 | **0,8015** |
 | MLPClassifier | 0,8390 ± 0,0145 | 0,5462 | **0,6718** | 0,4676 |
-| Random Forest | 0,8227 ± 0,0106 | 0,6040 | 0,5658 | 0,6479 |
+| Random Forest | 0,8225 ± 0,0122 | 0,5398 | 0,6269 | 0,4746 |
 
 #### Holdout 20%
 
@@ -54,7 +54,7 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8413** | **0,6136** | 0,5043 | **0,7834** | 0,7381 |
 | MLPClassifier | 0,8391 | 0,5514 | **0,6604** | 0,4733 | **0,7956** |
-| Random Forest | 0,8193 | 0,5845 | 0,5423 | 0,6337 | 0,7608 |
+| Random Forest | 0,8216 | 0,5416 | 0,6237 | 0,4786 | 0,7850 |
 
 A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC e F1 nos dois protocolos e recall superior, característica relevante para uma estratégia de retenção.
 
@@ -144,7 +144,9 @@ A interface ficará disponível em `http://localhost:8501`.
 
 ## Qualidade e reprodutibilidade
 
-O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação dos modelos, validação cruzada, análise de threshold e geração dos artefatos. Seeds e parâmetros de divisão/validação são centralizados para favorecer a reprodutibilidade.
+O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação dos modelos, validação cruzada, análise de threshold, treino do artefato final e verificação de consistência dos reports versionados. Seeds e parâmetros de divisão/validação são centralizados para favorecer a reprodutibilidade.
+
+Métricas reportadas nesta documentação foram geradas com Python 3.10, scikit-learn 1.7.2, numpy 2.2.6, pandas 2.3.3 e seed 42. O CI usa Python 3.11 e valida a consistência dos reports com arredondamento a 6 casas decimais.
 
 O modelo final é treinado em todo o dataset após a etapa de avaliação e pode ser reconstruído sem depender de um arquivo binário versionado previamente no repositório.
 
