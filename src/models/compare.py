@@ -10,9 +10,9 @@ from src.data.loader import load_raw_data, split_features_target
 from src.models.evaluate import evaluate_predictions
 from src.models.model_selection import build_models
 from src.utils.config import RANDOM_STATE, TEST_SIZE
+from src.utils.reporting import write_report
 
 OUTPUT = Path("reports/model_results.csv")
-logger = logging.getLogger(__name__)
 
 
 def compare_models() -> pd.DataFrame:
@@ -31,10 +31,7 @@ def compare_models() -> pd.DataFrame:
         rows.append({"model": name, **metrics})
 
     result = pd.DataFrame(rows).sort_values("roc_auc", ascending=False)
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    result.to_csv(OUTPUT, index=False)
-    logger.info("%s", result.to_string(index=False))
-    return result
+    return write_report(result, OUTPUT)
 
 
 if __name__ == "__main__":
