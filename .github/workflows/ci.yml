@@ -39,6 +39,8 @@ jobs:
             https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv
       - name: Train and compare models
         run: python -m src.models.compare
+      - name: Threshold analysis
+        run: python -m src.models.threshold_analysis
       - name: Train final artifact
         run: python -m src.models.train
       - name: Upload model outputs
@@ -48,3 +50,4 @@ jobs:
           path: |
             models/
             reports/model_results.csv
+            reports/threshold_analysis.csv
