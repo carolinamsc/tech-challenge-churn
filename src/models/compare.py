@@ -1,5 +1,6 @@
 """Train and compare candidate churn models on a reproducible holdout split."""
 
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +12,7 @@ from src.models.model_selection import build_models
 from src.utils.config import RANDOM_STATE, TEST_SIZE
 
 OUTPUT = Path("reports/model_results.csv")
+logger = logging.getLogger(__name__)
 
 
 def compare_models() -> pd.DataFrame:
@@ -31,9 +33,10 @@ def compare_models() -> pd.DataFrame:
     result = pd.DataFrame(rows).sort_values("roc_auc", ascending=False)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT, index=False)
-    print(result.to_string(index=False))
+    logger.info("%s", result.to_string(index=False))
     return result
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     compare_models()
