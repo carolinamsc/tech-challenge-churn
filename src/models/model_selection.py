@@ -1,9 +1,9 @@
 """Candidate churn classification models."""
 
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
 
 from src.features.preprocessing import build_preprocessor
 from src.utils.config import RANDOM_STATE
