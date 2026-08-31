@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+import numpy as np
 
 from src.api.main import app
 
@@ -42,7 +43,7 @@ def test_predict_returns_prediction(monkeypatch):
     class DummyModel:
         def predict_proba(self, frame):
             assert len(frame) == 1
-            return [[0.30, 0.70]]
+            return np.array([[0.30, 0.70]])
 
     monkeypatch.setattr("src.api.main.get_model", lambda: DummyModel())
     response = client.post("/predict", json=VALID_CUSTOMER)
