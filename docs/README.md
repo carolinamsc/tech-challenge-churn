@@ -1,12 +1,35 @@
 # Documentação
 
-Este diretório reúne a documentação técnica, metodológica e operacional da solução.
+Este diretório reúne a documentação técnica, metodológica e operacional da solução, além das evidências visuais da EDA.
 
 ## Modelo e dados
 
 - [Model Card](MODEL_CARD.md) — objetivo, uso pretendido, dados, métricas, threshold, limitações, vieses e cenários de falha.
 - [EDA Findings](EDA_FINDINGS.md) — qualidade dos dados, tratamento de `TotalCharges`, hipóteses e decisões de modelagem.
+- [Notebook de EDA + baseline](01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Experimentos](EXPERIMENTS.md) — protocolos de holdout e 5-fold CV, comparação dos candidatos, escolha do modelo e análise de threshold.
+
+## Evidências visuais
+
+### Distribuição do churn
+
+![Distribuição do target — Churn](churn_distribution.png)
+
+### Churn por contrato, internet, pagamento e faturamento
+
+![Churn por contrato, internet, pagamento e faturamento](churn_by_contract.png)
+
+### Churn por faixa de tenure
+
+![Taxa de churn por faixa de tenure](churn_by_tenure.png)
+
+### Variáveis numéricas por churn
+
+![Boxplots das variáveis numéricas por churn](numeric_by_churn.png)
+
+### Trade-off do threshold
+
+![Trade-off do threshold](threshold_curve.png)
 
 ## Negócio e operação
 
@@ -16,6 +39,7 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 ## Engenharia
 
 - [Arquitetura](ARCHITECTURE.md) — camadas da aplicação, API, Streamlit, Docker, deploy e decisões técnicas.
+- [Script de visualização do threshold](threshold_curve.py) — gera a curva a partir de `../reports/threshold_analysis.csv`.
 
 ## Resultados reproduzíveis
 
