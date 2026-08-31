@@ -1,8 +1,11 @@
-"""Streamlit interface for the churn prediction API/model."""
+"""Streamlit front-end for the churn prediction API."""
 
+import os
+
+import requests
 import streamlit as st
 
-from src.models.predict import load_model, predict_churn
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="Churn Prediction", page_icon="📉", layout="wide")
 st.title("📉 Churn Prediction")
@@ -67,7 +70,9 @@ if submitted:
         "TotalCharges": total,
     }
     try:
-        result = predict_churn(load_model(), customer)
+        response = requests.post(f"{API_URL}/predict", json=customer, timeout=10)
+        response.raise_for_status()
+        result = response.json()
         probability = result["churn_probability"]
         st.subheader("Resultado")
         st.metric("Probabilidade de churn", f"{probability:.1%}")
@@ -78,5 +83,5 @@ if submitted:
         else:
             st.success("🟢 Baixo risco")
         st.write(f"Classificação: **{result['churn_prediction']}** · Threshold: **{result['threshold']:.2f}**")
-    except FileNotFoundError:
-        st.error("Modelo treinado não encontrado. Execute o treinamento primeiro.")
+    except requests.RequestException as exc:
+        st.error(f"Não foi possível consultar a API: {exc}")
