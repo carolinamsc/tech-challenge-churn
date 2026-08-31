@@ -19,6 +19,23 @@ st.set_page_config(
     layout="wide",
 )
 
+
+@st.cache_resource
+def get_local_model():
+    """Train and cache the selected model for standalone Streamlit hosting."""
+    data_path = download_dataset()
+    df = load_raw_data(data_path)
+    X, y = split_features_target(df)
+    model = build_models()["logistic_regression"]
+    model.fit(X, y)
+    return model
+
+
+def local_predict(customer: dict) -> dict:
+    """Predict directly when no remote API URL is configured."""
+    return predict_churn(get_local_model(), customer, threshold=DEFAULT_THRESHOLD)
+
+
 st.markdown(
     """
     <style>
