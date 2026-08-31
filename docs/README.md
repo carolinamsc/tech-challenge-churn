@@ -4,6 +4,7 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 
 ## Modelo e dados
 
+- [ML Canvas](ML_CANVAS.md) — proposta de valor, decisão suportada, stakeholders, métricas e riscos.
 - [Model Card](MODEL_CARD.md) — objetivo, uso pretendido, dados, métricas, threshold, limitações, vieses e cenários de falha.
 - [EDA Findings](EDA_FINDINGS.md) — qualidade dos dados, tratamento de `TotalCharges`, hipóteses, decisões de modelagem e evidências visuais.
 - [Notebook de EDA + baseline](../notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
@@ -31,6 +32,10 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 
 ![Trade-off do threshold](threshold_curve.png)
 
+### Drift de entrada
+
+![Drift de entrada — PSI por variável](drift_psi.png)
+
 ## Negócio e operação
 
 - [Métrica de negócio](BUSINESS_METRIC.md) — taxa de intervenção, recall e trade-off do threshold para priorização de retenção.
@@ -40,7 +45,9 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 
 - [Arquitetura](ARCHITECTURE.md) — camadas da aplicação, API, Streamlit, Docker, deploy e decisões técnicas.
 - [Visualização do threshold](../src/viz/threshold_curve.py) — gera a curva diretamente de `reports/threshold_analysis.csv`.
+- [Visualização do drift](../src/viz/drift_chart.py) — gera o gráfico PSI diretamente de `reports/drift_baseline.csv`.
 - [Monitoramento de drift](../src/monitoring/drift.py) — calcula PSI e gera o baseline versionado.
+- [Página de monitoramento](../pages/1_Monitoramento.py) — visualização do relatório de drift no Streamlit.
 
 ## Resultados reproduzíveis
 
