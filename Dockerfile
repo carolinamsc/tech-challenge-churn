@@ -12,8 +12,7 @@ COPY data ./data
 COPY models ./models
 
 RUN pip install --no-cache-dir . \
-    && mkdir -p data/raw \
-    && python -c "from urllib.request import urlretrieve; urlretrieve('https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv', 'data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv')" \
+    && python -m src.data.download \
     && python -m src.models.train \
     && rm -rf data/raw
 
