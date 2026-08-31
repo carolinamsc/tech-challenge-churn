@@ -40,11 +40,11 @@ Candidatos:
 
 ### Holdout
 
-É utilizado um split estratificado de 20%, com `random_state=42`. O teste fica separado para a avaliação final.
+É utilizado um split estratificado de 20%, com `random_state=42`. O conjunto de teste fica separado para a avaliação final.
 
 ### Validação cruzada
 
-Os três candidatos são avaliados pelo mesmo protocolo de validação cruzada estratificada 5-fold. O pré-processamento permanece dentro do pipeline para evitar vazamento entre folds.
+A validação cruzada estratificada 5-fold é executada sobre o dataset completo, com o pré-processamento dentro do `Pipeline` e reajustado a cada fold — não há vazamento de transformações entre treino e validação. A CV mede a estabilidade das métricas entre partições; o holdout de 20% mede o desempenho em um conjunto que não participou do ajuste final. Os dois protocolos são complementares e não independentes entre si: o holdout está contido no conjunto usado pela CV.
 
 As métricas principais são ROC-AUC, F1, precision e recall. Accuracy também é registrada no holdout.
 
