@@ -1,15 +1,38 @@
-"""Streamlit front-end for the churn prediction API."""
+"""Streamlit front-end for the churn prediction API or local model."""
 
 import os
 
 import requests
 import streamlit as st
 
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+from src.data.download import download_dataset
+from src.data.loader import load_raw_data, split_features_target
+from src.models.model_selection import build_models
+from src.models.predict import predict_churn
+from src.utils.config import DEFAULT_THRESHOLD
+
+API_URL = os.getenv("API_URL")
 
 st.set_page_config(page_title="Churn Prediction", page_icon="📉", layout="wide")
 st.title("📉 Churn Prediction")
 st.caption("Avaliação individual do risco de cancelamento de clientes")
+
+
+@st.cache_resource
+def get_local_model():
+    """Train and cache the selected model for standalone Streamlit hosting."""
+    data_path = download_dataset()
+    df = load_raw_data(data_path)
+    X, y = split_features_target(df)
+    model = build_models()["logistic_regression"]
+    model.fit(X, y)
+    return model
+
+
+def local_predict(customer: dict) -> dict:
+    """Predict directly when no remote API URL is configured."""
+    return predict_churn(get_local_model(), customer, threshold=DEFAULT_THRESHOLD)
+
 
 with st.form("customer_form"):
     st.subheader("Dados do cliente")
@@ -70,9 +93,13 @@ if submitted:
         "TotalCharges": total,
     }
     try:
-        response = requests.post(f"{API_URL}/predict", json=customer, timeout=10)
-        response.raise_for_status()
-        result = response.json()
+        if API_URL:
+            response = requests.post(f"{API_URL}/predict", json=customer, timeout=10)
+            response.raise_for_status()
+            result = response.json()
+        else:
+            result = local_predict(customer)
+
         probability = result["churn_probability"]
         st.subheader("Resultado")
         st.metric("Probabilidade de churn", f"{probability:.1%}")
@@ -83,5 +110,5 @@ if submitted:
         else:
             st.success("🟢 Baixo risco")
         st.write(f"Classificação: **{result['churn_prediction']}** · Threshold: **{result['threshold']:.2f}**")
-    except requests.RequestException as exc:
-        st.error(f"Não foi possível consultar a API: {exc}")
+    except (requests.RequestException, FileNotFoundError, ValueError) as exc:
+        st.error(f"Não foi possível calcular o risco: {exc}")
