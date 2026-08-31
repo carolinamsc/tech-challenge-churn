@@ -46,7 +46,7 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8449 ± 0,0135** | **0,6258** | 0,5134 | **0,8015** |
 | MLPClassifier | 0,8390 ± 0,0145 | 0,5462 | **0,6718** | 0,4676 |
-| Random Forest | 0,8225 ± 0,0122 | 0,5398 | 0,6269 | 0,4746 |
+| Random Forest | 0,8227 ± 0,0106 | 0,6040 | 0,5658 | 0,6479 |
 
 #### Holdout 20%
 
@@ -54,9 +54,9 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8413** | **0,6136** | 0,5043 | **0,7834** | 0,7381 |
 | MLPClassifier | 0,8391 | 0,5514 | **0,6604** | 0,4733 | **0,7956** |
-| Random Forest | 0,8216 | 0,5416 | 0,6237 | 0,4786 | 0,7850 |
+| Random Forest | 0,8193 | 0,5845 | 0,5423 | 0,6337 | 0,7608 |
 
-A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC e F1 nos dois protocolos e recall superior, característica relevante para uma estratégia de retenção.
+A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC, F1 e recall nos dois protocolos. Para retenção, o recall é especialmente relevante porque representa a parcela de clientes que realmente cancelaram e foram sinalizados pelo modelo.
 
 ### Threshold
 
@@ -76,12 +76,7 @@ Os resultados completos estão versionados em [`reports/`](reports/).
 
 ### Streamlit
 
-Interface para simular um cliente e consultar:
-
-- probabilidade de churn;
-- classificação de churn;
-- nível de risco;
-- threshold utilizado.
+Interface para simular um cliente e consultar probabilidade de churn, classificação, nível de risco e threshold utilizado.
 
 Execute localmente:
 
@@ -144,9 +139,22 @@ A interface ficará disponível em `http://localhost:8501`.
 
 ## Qualidade e reprodutibilidade
 
-O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação dos modelos, validação cruzada, análise de threshold, treino do artefato final e verificação de consistência dos reports versionados. Seeds e parâmetros de divisão/validação são centralizados para favorecer a reprodutibilidade.
+O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação cruzada, comparação de modelos, análise de threshold, treino do artefato final e verificação de consistência dos reports versionados.
 
-Métricas reportadas nesta documentação foram geradas com Python 3.10, scikit-learn 1.7.2, numpy 2.2.6, pandas 2.3.3 e seed 42. O CI usa Python 3.11 e valida a consistência dos reports com arredondamento a 6 casas decimais.
+### Ambiente de referência
+
+Os resultados versionados são definidos pelo mesmo ambiente do CI:
+
+- Python 3.11
+- scikit-learn 1.9.0
+- numpy 2.4.6
+- scipy 1.17.1
+- pandas 2.3.3
+- seed 42
+
+As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação entre versões podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
+
+O CI também regenera os relatórios e falha quando os arquivos em `reports/` divergem do resultado gerado pelos scripts.
 
 O modelo final é treinado em todo o dataset após a etapa de avaliação e pode ser reconstruído sem depender de um arquivo binário versionado previamente no repositório.
 
@@ -155,6 +163,8 @@ O modelo final é treinado em todo o dataset após a etapa de avaliação e pode
 - [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
 - [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
 - [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados e decisões de modelagem
+- [Experimentos](docs/EXPERIMENTS.md) — protocolo de avaliação e seleção do modelo
+- [Arquitetura](docs/ARCHITECTURE.md) — componentes e modos de execução
 - [Plano de monitoramento](docs/MONITORING.md) — drift, performance e gatilhos de revalidação
 
 ## Limitações
