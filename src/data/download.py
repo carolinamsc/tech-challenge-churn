@@ -5,6 +5,7 @@ The dataset is the IBM/Kaggle Telco Customer Churn file
 not committed to this repository.
 """
 
+import logging
 from pathlib import Path
 from urllib.request import urlopen
 
@@ -13,6 +14,8 @@ DATA_URL = (
     "WA_Fn-UseC_-Telco-Customer-Churn.csv"
 )
 DATA_PATH = Path("data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+
+logger = logging.getLogger(__name__)
 
 
 def download_dataset() -> Path:
@@ -27,5 +30,5 @@ def download_dataset() -> Path:
 
 
 if __name__ == "__main__":
-    path = download_dataset()
-    print(f"Dataset available at: {path}")
+    logging.basicConfig(level=logging.INFO)
+    logger.info("dataset available at %s", download_dataset())
