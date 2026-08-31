@@ -6,6 +6,8 @@ O projeto usa o dataset público **IBM Telco Customer Churn**, com 7.043 registr
 
 A inspeção inicial encontrou 0 duplicatas e `Churn` em aproximadamente **26,5%** dos registros.
 
+![Distribuição do target — Churn](churn_distribution.png)
+
 ## Qualidade dos dados
 
 - `customerID` é um identificador e não é usado como feature.
@@ -19,7 +21,19 @@ A decisão adotada foi converter `TotalCharges` para numérico e tratar os valor
 
 ## Padrões observados
 
-A análise exploratória mostrou diferenças de churn relacionadas principalmente a:
+A análise exploratória mostrou diferenças de churn relacionadas principalmente a contrato, método de pagamento e tempo de relacionamento.
+
+### Contrato, internet, pagamento e faturamento
+
+![Churn por contrato, internet, pagamento e faturamento](churn_by_contract.png)
+
+### Tenure
+
+![Taxa de churn por faixa de tenure](churn_by_tenure.png)
+
+### Variáveis numéricas
+
+![Boxplots das variáveis numéricas por churn](numeric_by_churn.png)
 
 - **Contract:** clientes com contrato `Month-to-month` apresentam churn proporcionalmente maior que clientes com contratos de maior duração.
 - **PaymentMethod:** o método de pagamento apresenta diferenças relevantes nas taxas observadas de churn.
@@ -49,6 +63,10 @@ A comparação por holdout e validação cruzada mostrou a Regressão Logística
 
 A escolha final não foi baseada em complexidade do modelo, mas em desempenho medido e aderência ao objetivo de capturar potenciais churners.
 
-## Próximos usos
+## Threshold
 
 O EDA também orientou a análise de threshold e a definição da **taxa de intervenção** como métrica operacional. O threshold final de `0,55` foi escolhido após comparar precision, recall, F1 e o percentual da carteira que seria acionado.
+
+A curva completa do trade-off está em:
+
+![Trade-off do threshold](threshold_curve.png)
