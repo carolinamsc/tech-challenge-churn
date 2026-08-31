@@ -74,6 +74,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+@st.cache_resource(show_spinner="Carregando modelo...")
+def get_local_model():
+    """Download, load and train the standalone local model once per app process."""
+    data_path = download_dataset()
+    df = load_raw_data(data_path)
+    X, y = split_features_target(df)
+    model = build_models()["logistic_regression"]
+    model.fit(X, y)
+    return model
+
 with st.form("customer_form"):
     st.subheader("Dados do cliente")
     st.caption("Preencha os campos abaixo para estimar o risco de churn.")
@@ -181,11 +191,7 @@ if submitted:
             response.raise_for_status()
             result = response.json()
         else:
-            data_path = download_dataset()
-            df = load_raw_data(data_path)
-            X, y = split_features_target(df)
-            model = build_models()["logistic_regression"]
-            model.fit(X, y)
+            model = get_local_model()
             result = predict_churn(model, customer, threshold=DEFAULT_THRESHOLD)
 
         probability = result["churn_probability"]
