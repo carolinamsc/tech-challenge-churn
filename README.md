@@ -32,7 +32,27 @@ Modelo final
 FastAPI ─────────── Streamlit
 ```
 
-### Modelos avaliados
+## EDA e evidências visuais
+
+A EDA completa está no [notebook executado](notebooks/01_eda_baseline.ipynb). Os principais achados e decisões estão documentados em [EDA Findings](docs/EDA_FINDINGS.md).
+
+### Distribuição do churn
+
+![Distribuição do target — Churn](docs/churn_distribution.png)
+
+### Churn por contrato, internet, pagamento e faturamento
+
+![Churn por contrato, internet, pagamento e faturamento](docs/churn_by_contract.png)
+
+### Churn por faixa de tenure
+
+![Taxa de churn por faixa de tenure](docs/churn_by_tenure.png)
+
+### Variáveis numéricas por churn
+
+![Boxplots das variáveis numéricas por churn](docs/numeric_by_churn.png)
+
+## Modelos avaliados
 
 - Regressão Logística
 - Random Forest
@@ -58,7 +78,7 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 
 A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC, F1 e recall nos dois protocolos. Para retenção, o recall é especialmente relevante porque representa a parcela de clientes que realmente cancelaram e foram sinalizados pelo modelo.
 
-### Threshold
+## Threshold
 
 No holdout, a análise mostrou que o threshold **0,55** produz o melhor F1 entre os pontos avaliados:
 
@@ -69,6 +89,8 @@ No holdout, a análise mostrou que o threshold **0,55** produz o melhor F1 entre
 - Clientes acionados: **536 de 1.409**
 
 O threshold representa uma política operacional de priorização e pode ser recalibrado conforme a capacidade da equipe e os custos reais de retenção.
+
+![Trade-off do threshold](docs/threshold_curve.png)
 
 Os resultados completos estão versionados em [`reports/`](reports/).
 
@@ -130,6 +152,19 @@ A interface ficará disponível em `http://localhost:8501`.
 │   └── threshold_analysis.csv
 ├── tests/
 ├── docs/
+│   ├── EDA_FINDINGS.md
+│   ├── MODEL_CARD.md
+│   ├── BUSINESS_METRIC.md
+│   ├── EXPERIMENTS.md
+│   ├── ARCHITECTURE.md
+│   ├── MONITORING.md
+│   ├── 01_eda_baseline.ipynb
+│   ├── churn_distribution.png
+│   ├── churn_by_contract.png
+│   ├── churn_by_tenure.png
+│   ├── numeric_by_churn.png
+│   ├── threshold_curve.png
+│   └── threshold_curve.py
 ├── app.py
 ├── Dockerfile
 ├── docker-compose.yml
@@ -152,7 +187,7 @@ Os resultados versionados são definidos pelo mesmo ambiente do CI:
 - pandas 2.3.3
 - seed 42
 
-As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação entre versões podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
+As versões das bibliotecas que influenciam os experimentos estão fixadas no `pyproject.toml`. Isso é importante porque pequenas diferenças de implementação podem alterar resultados do Random Forest mesmo quando o restante do pipeline permanece idêntico.
 
 O CI também regenera os relatórios e falha quando os arquivos em `reports/` divergem do resultado gerado pelos scripts.
 
