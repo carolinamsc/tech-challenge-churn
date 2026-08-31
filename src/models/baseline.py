@@ -1,10 +1,11 @@
 """Baseline model training and evaluation helpers."""
 
+from sklearn.model_selection import train_test_split
+
 from src.data.loader import load_raw_data, split_features_target
 from src.models.evaluate import evaluate_predictions
 from src.models.model_selection import build_models
 from src.utils.config import RANDOM_STATE, TEST_SIZE
-from sklearn.model_selection import train_test_split
 
 
 def train_baseline():
