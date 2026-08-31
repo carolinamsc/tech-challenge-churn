@@ -10,9 +10,9 @@ Acompanhar especialmente `Contract`, `tenure`, `MonthlyCharges` e `PaymentMethod
 
 Quando novos rótulos de churn estiverem disponíveis, recalcular ROC-AUC, F1, precision e recall.
 
-## Detecção implementada — PSI
+## Detecção de drift — implementação executável
 
-O drift de entrada está implementado em `src/monitoring/drift.py` usando **Population Stability Index (PSI)**.
+O drift de entrada está implementado em `src/monitoring/drift.py` usando **Population Stability Index (PSI)**. O baseline pode ser gerado com `python -m src.monitoring.drift`, visualizado com `python -m src.viz.drift_chart` e consultado na página **Monitoramento** do Streamlit em `pages/1_Monitoramento.py`.
 
 | PSI | Status | Leitura |
 |---|---|---|
@@ -22,7 +22,7 @@ O drift de entrada está implementado em `src/monitoring/drift.py` usando **Popu
 
 Variáveis numéricas usam bins por quantis da referência; categóricas usam as categorias observadas na referência. `python -m src.monitoring.drift` compara treino e holdout e grava `reports/drift_baseline.csv`. Como as duas partições vêm da mesma população, o baseline esperado é estável.
 
-Para um lote futuro, o mesmo `compute_drift(referencia, lote_atual)` pode ser aplicado antes do scoring. O CI também executa o baseline e verifica a consistência do relatório versionado.
+Para um lote futuro, o mesmo `compute_drift(referencia, lote_atual)` pode ser aplicado antes do scoring. O CI executa o baseline e verifica a consistência do relatório versionado.
 
 ## Gatilhos para revalidação ou retreino
 
