@@ -74,9 +74,9 @@ A comparação utiliza o mesmo pipeline de pré-processamento e os mesmos protoc
 |---|---:|---:|---:|---:|---:|
 | **Logistic Regression** | **0,8413** | **0,6136** | 0,5043 | **0,7834** | 0,7381 |
 | MLPClassifier | 0,8391 | 0,5514 | **0,6604** | 0,4733 | **0,7956** |
-| Random Forest | 0,8216 | 0,5416 | 0,6237 | 0,4786 | 0,7850 |
+| Random Forest | 0,8193 | 0,5845 | 0,5423 | 0,6337 | 0,7608 |
 
-A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC e F1 nos dois protocolos e recall superior, característica relevante para uma estratégia de retenção.
+A Regressão Logística foi selecionada como modelo final por apresentar o melhor ROC-AUC, F1 e recall nos dois protocolos. Para retenção, o recall é especialmente relevante porque representa a parcela de clientes que realmente cancelaram e foram sinalizados pelo modelo.
 
 ## Threshold
 
@@ -195,7 +195,7 @@ O CI também regenera os relatórios e falha quando os arquivos em `reports/` di
 
 ## Documentação
 
-- [Notebook de EDA + baseline](../notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
+- [Notebook de EDA + baseline](notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
 - [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
 - [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados, evidências visuais e decisões de modelagem
