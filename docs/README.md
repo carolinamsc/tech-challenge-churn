@@ -5,8 +5,8 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 ## Modelo e dados
 
 - [Model Card](MODEL_CARD.md) — objetivo, uso pretendido, dados, métricas, threshold, limitações, vieses e cenários de falha.
-- [EDA Findings](EDA_FINDINGS.md) — qualidade dos dados, tratamento de `TotalCharges`, hipóteses e decisões de modelagem.
-- [Notebook de EDA + baseline](01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
+- [EDA Findings](EDA_FINDINGS.md) — qualidade dos dados, tratamento de `TotalCharges`, hipóteses, decisões de modelagem e evidências visuais.
+- [Notebook de EDA + baseline](../notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Experimentos](EXPERIMENTS.md) — protocolos de holdout e 5-fold CV, comparação dos candidatos, escolha do modelo e análise de threshold.
 
 ## Evidências visuais
@@ -39,7 +39,8 @@ Este diretório reúne a documentação técnica, metodológica e operacional da
 ## Engenharia
 
 - [Arquitetura](ARCHITECTURE.md) — camadas da aplicação, API, Streamlit, Docker, deploy e decisões técnicas.
-- [Script de visualização do threshold](threshold_curve.py) — gera a curva a partir de `../reports/threshold_analysis.csv`.
+- [Visualização do threshold](../src/viz/threshold_curve.py) — gera a curva diretamente de `reports/threshold_analysis.csv`.
+- [Monitoramento de drift](../src/monitoring/drift.py) — calcula PSI e gera o baseline versionado.
 
 ## Resultados reproduzíveis
 
@@ -47,6 +48,7 @@ Os resultados dos experimentos ficam versionados em `../reports/`:
 
 - `model_results.csv` — comparação dos candidatos no holdout;
 - `cross_validation.csv` — métricas médias e desvios dos 5 folds;
-- `threshold_analysis.csv` — avaliação dos pontos de corte de 0,20 a 0,70.
+- `threshold_analysis.csv` — avaliação dos pontos de corte de 0,20 a 0,70;
+- `drift_baseline.csv` — baseline de PSI entre treino e holdout.
 
-Os arquivos são produzidos pelos scripts em `src/models/` e validados pelo GitHub Actions. O ambiente oficial é definido no `pyproject.toml` para reduzir diferenças entre execuções.
+Os arquivos são produzidos pelos scripts em `src/models/` e `src/monitoring/` e validados pelo GitHub Actions. O ambiente oficial é definido no `pyproject.toml` para reduzir diferenças entre execuções.
