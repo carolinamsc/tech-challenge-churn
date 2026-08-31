@@ -195,7 +195,7 @@ O CI também regenera os relatórios e falha quando os arquivos em `reports/` di
 
 ## Documentação
 
-- [Notebook de EDA + baseline](notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs
+- [Notebook de EDA + baseline](../notebooks/01_eda_baseline.ipynb) — notebook executado e versionado com outputs.
 - [Model Card](docs/MODEL_CARD.md) — uso pretendido, métricas, threshold, limitações, vieses e cenários de falha
 - [Métrica de negócio](docs/BUSINESS_METRIC.md) — recall, taxa de intervenção e trade-off do threshold
 - [EDA Findings](docs/EDA_FINDINGS.md) — qualidade dos dados, evidências visuais e decisões de modelagem
