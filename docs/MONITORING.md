@@ -2,54 +2,40 @@
 
 ## Objetivo
 
-O monitoramento deve verificar se a distribuição dos dados, as previsões e a capacidade operacional continuam próximas do comportamento observado durante a validação.
+Verificar se a distribuição dos dados, as previsões e a capacidade operacional permanecem próximas do comportamento observado na validação.
 
 ## O que monitorar
 
-### Dados e drift
+Acompanhar especialmente `Contract`, `tenure`, `MonthlyCharges` e `PaymentMethod`, além da distribuição das probabilidades preditas, percentual acima do threshold `0,55`, taxa de intervenção esperada de aproximadamente **38%**, volume de chamadas ao `/predict`, latência e erros da API.
 
-Acompanhar a distribuição das features com maior relevância para o modelo e para a decisão de negócio, especialmente:
+Quando novos rótulos de churn estiverem disponíveis, recalcular ROC-AUC, F1, precision e recall.
 
-- `Contract`
-- `tenure`
-- `MonthlyCharges`
-- `PaymentMethod`
+## Detecção implementada — PSI
 
-Comparar a distribuição atual com a referência usada no treinamento. Mudanças persistentes podem indicar data drift e necessidade de revalidação.
+O drift de entrada está implementado em `src/monitoring/drift.py` usando **Population Stability Index (PSI)**.
 
-### Saída do modelo
+| PSI | Status | Leitura |
+|---|---|---|
+| < 0,10 | `stable` | distribuição equivalente à referência |
+| 0,10 – 0,25 | `warning` | desvio moderado, acompanhar |
+| ≥ 0,25 | `alert` | desvio relevante, investigar e considerar revalidação |
 
-Monitorar:
+Variáveis numéricas usam bins por quantis da referência; categóricas usam as categorias observadas na referência. `python -m src.monitoring.drift` compara treino e holdout e grava `reports/drift_baseline.csv`. Como as duas partições vêm da mesma população, o baseline esperado é estável.
 
-- distribuição das probabilidades preditas;
-- percentual de clientes acima do threshold `0,55`;
-- taxa de intervenção observada versus a taxa esperada de aproximadamente **38%** no cenário de referência;
-- volume de chamadas ao endpoint `/predict`;
-- latência e taxa de erro da API.
-
-### Performance
-
-O churn real só fica conhecido depois do período de observação. Quando novos rótulos estiverem disponíveis, recalcular ROC-AUC, F1, precision e recall e comparar com a validação de referência.
+Para um lote futuro, o mesmo `compute_drift(referencia, lote_atual)` pode ser aplicado antes do scoring. O CI também executa o baseline e verifica a consistência do relatório versionado.
 
 ## Gatilhos para revalidação ou retreino
 
-Considerar investigação e revalidação quando ocorrer qualquer uma das condições:
-
-- ROC-AUC abaixo de **0,80** na base rotulada mais recente;
-- taxa de intervenção persistindo fora da faixa de **30% a 45%** sem mudança planejada na política de retenção;
-- drift relevante e persistente nas principais features;
-- mudança operacional que altere o perfil dos clientes ou a estratégia comercial.
-
-Esses valores são **critérios operacionais iniciais**, não evidência de que uma degradação já ocorreu em produção.
+Investigar quando ocorrer: ROC-AUC abaixo de **0,80** na base rotulada mais recente; taxa de intervenção fora de **30% a 45%** de forma persistente; drift relevante nas principais features; ou mudança no perfil da população/estratégia comercial.
 
 ## Limitação atual
 
-O projeto não possui rótulo de churn em tempo real. Portanto, a avaliação de performance é necessariamente **retrospectiva**: primeiro são geradas as previsões, depois os resultados reais ficam disponíveis e somente então as métricas podem ser calculadas.
+O drift de entrada é medido por código. A performance depende de rótulos disponíveis apenas depois do período de observação. A aplicação publicada é uma demonstração, não um ambiente operacional com coleta de métricas.
 
-## Playbook resumido
+## Playbook
 
-1. Detectar desvio em dados, previsões, taxa de intervenção ou performance.
-2. Verificar se a mudança é causada por alteração planejada no produto, preço ou população.
-3. Reexecutar a avaliação no conjunto de dados mais recente.
-4. Se houver degradação confirmada, revisar features, threshold e necessidade de retreino.
-5. Registrar a decisão, métricas e versão do modelo.
+1. Detectar desvio.
+2. Verificar se houve mudança planejada.
+3. Reexecutar a avaliação no conjunto mais recente.
+4. Confirmar degradação e revisar features, threshold ou retreino.
+5. Registrar decisão, métricas e versão do modelo.
