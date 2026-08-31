@@ -37,6 +37,8 @@ jobs:
           curl -L --fail --retry 3 \
             -o data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv \
             https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv
+      - name: Cross-validation
+        run: python -m src.models.cross_validation
       - name: Train and compare models
         run: python -m src.models.compare
       - name: Threshold analysis
@@ -50,4 +52,5 @@ jobs:
           path: |
             models/
             reports/model_results.csv
+            reports/cross_validation.csv
             reports/threshold_analysis.csv
