@@ -92,6 +92,14 @@ O threshold representa uma política operacional de priorização e pode ser rec
 
 ![Trade-off do threshold](docs/threshold_curve.png)
 
+## Monitoramento
+
+O drift de entrada é medido por Population Stability Index (PSI) em `src/monitoring/drift.py`, executado pelo CI a cada push e versionado em `reports/drift_baseline.csv`. As faixas adotadas são: estável abaixo de 0,10; atenção entre 0,10 e 0,25; alerta a partir de 0,25.
+
+![Drift de entrada — PSI por variável](docs/drift_psi.png)
+
+No baseline atual (treino × holdout) as 19 variáveis estão estáveis, com PSI máximo de 0,0125 em `MonthlyCharges`. A aplicação Streamlit tem uma página **Monitoramento** que lê esse mesmo relatório, e o plano completo de resposta a drift está em [docs/MONITORING.md](docs/MONITORING.md).
+
 Os resultados completos estão versionados em [`reports/`](reports/).
 
 ## Aplicação
@@ -105,6 +113,8 @@ Execute localmente:
 ```bash
 streamlit run app.py
 ```
+
+O app também possui uma página **Monitoramento**, acessível pelo menu lateral, que visualiza o relatório de drift versionado.
 
 ### API
 
@@ -166,7 +176,10 @@ A interface ficará disponível em `http://localhost:8501`.
 │   ├── churn_by_tenure.png
 │   ├── churn_distribution.png
 │   ├── numeric_by_churn.png
-│   └── threshold_curve.png
+│   ├── threshold_curve.png
+│   └── drift_psi.png
+├── pages/
+│   └── 1_Monitoramento.py
 ├── app.py
 ├── Dockerfile
 ├── docker-compose.yml
