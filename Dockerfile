@@ -7,9 +7,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 COPY pyproject.toml README.md ./
 COPY src ./src
+COPY app.py ./app.py
+COPY models ./models
 
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir .
 
-EXPOSE 8000
+EXPOSE 8501
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
