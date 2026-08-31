@@ -1,63 +1,86 @@
 # Model Card — Churn Prediction
 
-> **Status:** Draft — final performance values will be filled after the reproducible training run.
+## 1. Visão geral
 
-## 1. Model overview
+Modelo de classificação binária para estimar a propensão de churn de clientes de telecomunicações. O objetivo é apoiar a priorização de ações de retenção; a predição não deve ser interpretada como certeza de cancelamento.
 
-This project predicts whether a telecom customer is likely to churn. The prediction is intended to support customer-retention prioritization, not to make an irreversible automated decision.
+Os candidatos avaliados foram Regressão Logística, Random Forest e `MLPClassifier` do Scikit-Learn. Todos compartilham o mesmo pipeline de pré-processamento e são comparados nos mesmos protocolos de holdout e validação cruzada estratificada.
 
-The candidate models are:
+## 2. Uso pretendido
 
-- Logistic Regression — required baseline;
-- Random Forest;
-- MLPClassifier (Scikit-Learn).
+O modelo estima o risco de churn para ajudar uma equipe de retenção a priorizar contatos. A decisão operacional é baseada na probabilidade estimada e no threshold definido para o experimento.
 
-All candidates share the same preprocessing pipeline and are compared using stratified cross-validation.
+A saída não deve ser usada isoladamente para negar serviço, alterar condições contratuais ou tomar decisões de alto impacto sem revisão humana.
 
-## 2. Intended use
+## 3. Dados
 
-The model is intended to rank customers by estimated churn risk so a retention team can prioritize outreach.
+O projeto usa o dataset público IBM Telco Customer Churn, com 7.043 registros e 21 colunas. `Churn` é o alvo.
 
-It should not be used as the sole basis for denying service, changing contractual terms, or making decisions about a customer without human review.
+`customerID` é tratado como identificador e removido das features. `TotalCharges` é convertido para numérico e os valores ausentes são tratados dentro do pipeline de pré-processamento.
 
-## 3. Data
+## 4. Treinamento e avaliação
 
-The project uses the public IBM Telco Customer Churn dataset. The raw dataset contains 7,043 customer records and 21 columns, with `Churn` as the target.
+- Seed principal: `42`
+- Holdout: `20%`, estratificado
+- Validação cruzada: `5-fold`, estratificada
+- Métricas: ROC-AUC, F1, precision, recall e accuracy
+- O conjunto de teste é mantido fora do processo de seleção por CV e usado para avaliação final.
 
-`customerID` is treated as an identifier and excluded from model features. `TotalCharges` is converted to numeric and missing values are handled inside the preprocessing pipeline.
+### Validação cruzada 5-fold
 
-## 4. Training and evaluation
-
-- Random seed: `42`
-- Test split: `20%`
-- Cross-validation: stratified 5-fold
-- Candidate metrics: ROC-AUC, F1, precision, recall and accuracy
-- The test set is kept untouched until model selection is complete.
-
-## 5. Threshold
-
-The default classification threshold is `0.50`, but the project includes threshold analysis. The final threshold should be selected using validation results and the relative business cost of false negatives versus false positives.
-
-## 6. Performance
-
-Final CV and holdout metrics are intentionally not hard-coded before execution. This prevents undocumented or fabricated results from entering the deliverable.
-
-| Model | ROC-AUC | F1 | Precision | Recall |
+| Modelo | ROC-AUC (média ± dp) | F1 | Precision | Recall |
 |---|---:|---:|---:|---:|
-| Logistic Regression | pending | pending | pending | pending |
-| Random Forest | pending | pending | pending | pending |
-| MLPClassifier | pending | pending | pending | pending |
+| **Logistic Regression** | **0.8449 ± 0.0135** | **0.6258** | 0.5134 | **0.8015** |
+| MLPClassifier | 0.8390 ± 0.0145 | 0.5462 | **0.6718** | 0.4676 |
+| Random Forest | 0.8227 ± 0.0106 | 0.6040 | 0.5658 | 0.6479 |
 
-## 7. Limitations and risks
+### Holdout 20%
 
-- The dataset represents a particular telecom customer population and may not generalize to other businesses.
-- Historical churn patterns can encode existing commercial biases.
-- A probability estimate is not a causal explanation for why a customer will churn.
-- Customer behavior and pricing can change over time, causing distribution drift.
-- The model should be monitored and periodically revalidated if deployed.
+| Modelo | ROC-AUC | F1 | Precision | Recall | Accuracy |
+|---|---:|---:|---:|---:|---:|
+| **Logistic Regression** | **0.8413** | **0.6136** | 0.5043 | **0.7834** | 0.7381 |
+| MLPClassifier | 0.8391 | 0.5514 | **0.6604** | 0.4733 | **0.7956** |
+| Random Forest | 0.8193 | 0.5845 | 0.5423 | 0.6337 | 0.7608 |
 
-## 8. Reproducibility
+A Regressão Logística foi selecionada por apresentar o melhor ROC-AUC e F1 na validação cruzada e no holdout, além de recall superior nos dois protocolos. Para retenção, essa capacidade de capturar churners é relevante porque o objetivo é priorizar potenciais cancelamentos para intervenção.
 
-The project centralizes the random seed and split configuration. Preprocessing is part of the Scikit-Learn pipeline so training transformations are learned without using the held-out test set.
+## 5. Threshold e decisão operacional
 
-Run the training and comparison commands from the repository root after installing the project dependencies.
+O threshold final adotado é `0.55`.
+
+No holdout, esse ponto apresentou:
+
+- F1: **0.6176**
+- Recall: **75,1%**
+- Precision: **52,4%**
+- Taxa de intervenção: **38,0%**
+- Clientes acionados: **536 de 1.409**
+
+O threshold foi escolhido a partir do trade-off entre precisão e recall. Ele representa uma política de priorização, não uma propriedade fixa do modelo, e pode ser recalibrado conforme a capacidade operacional e os custos reais de retenção.
+
+## 6. Limitações
+
+- O dataset representa uma população histórica específica de telecomunicações e pode não generalizar para outros produtos ou mercados.
+- A probabilidade prevista é uma associação estatística, não uma explicação causal do churn.
+- Fatores externos, como mudança de preço, concorrência ou eventos pessoais, não são diretamente observáveis nas features.
+- O modelo não distingue causas de churn voluntárias de eventos como inadimplência quando essas causas não estão representadas nas variáveis.
+- O desempenho pode degradar com mudanças na população ou nas políticas comerciais.
+
+## 7. Vieses identificados e riscos
+
+Variáveis de perfil podem reproduzir diferenças históricas de churn entre grupos. Em particular, a taxa observada de churn é maior entre clientes `SeniorCitizen` e entre contratos mensais; o modelo pode, portanto, sinalizar esses grupos com maior frequência.
+
+Antes de uso em produção, recomenda-se avaliar performance, calibração e taxa de decisão por subgrupo. A saída deve apoiar uma decisão de negócio responsável, e não automatizá-la sem supervisão.
+
+## 8. Cenários de falha
+
+- Clientes com `tenure` muito baixo podem apresentar `TotalCharges` ausente no dataset original; a imputação por mediana pode subestimar o risco desse grupo.
+- Mudanças relevantes de preço, concorrência ou produto podem gerar data drift e reduzir a validade das previsões.
+- O modelo não possui informação suficiente para explicar churn provocado por fatores externos não observados.
+- A degradação de distribuição, calibração ou performance pode tornar o threshold atual inadequado.
+
+## 9. Reprodutibilidade
+
+A seed principal e os parâmetros de split são centralizados no projeto. O pipeline de pré-processamento é serializável e aplicado de forma consistente entre treino e inferência.
+
+O GitHub Actions executa lint, testes, validação cruzada, comparação de modelos, análise de threshold e geração do artefato final. Os resultados dos experimentos são armazenados em `reports/`.
