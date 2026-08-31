@@ -1,48 +1,112 @@
 # Churn Prediction — Tech Challenge FIAP Fase 1
 
-Projeto de Machine Learning para previsão de churn, desenvolvido com foco nos requisitos da Fase 1 do Tech Challenge e em boas práticas de engenharia de ML.
+Projeto de Machine Learning para previsão de churn, desenvolvido para a Fase 1 do Tech Challenge FIAP. A solução combina análise de dados, comparação de modelos, otimização de threshold, API REST e interface web para apoiar decisões de retenção.
 
 ## Objetivo
 
-Construir, avaliar e disponibilizar um modelo capaz de identificar clientes com maior probabilidade de churn, apoiando estratégias de retenção.
+Identificar clientes com maior probabilidade de cancelamento e transformar a previsão em uma regra de priorização para ações de retenção.
 
-## Abordagem
+## Solução
 
-1. Análise exploratória e entendimento do problema.
-2. Pré-processamento reproduzível com `scikit-learn Pipeline`.
-3. Comparação de **Regressão Logística**, **Random Forest** e **MLPClassifier**.
-4. Validação cruzada estratificada e avaliação em conjunto de teste.
-5. Seleção do modelo campeão considerando métricas técnicas e impacto de negócio.
-6. Persistência do pipeline completo.
-7. API REST com FastAPI (`/health` e `/predict`).
-8. Testes automatizados, documentação e Model Card.
+```text
+Dados
+  ↓
+EDA + validação
+  ↓
+Preprocessing reproduzível
+  ↓
+Logistic Regression | Random Forest | MLP
+  ↓
+Avaliação + threshold analysis
+  ↓
+Modelo final
+  ↓
+FastAPI ─────────── Streamlit
+```
+
+### Modelos avaliados
+
+- Regressão Logística
+- Random Forest
+- MLPClassifier
+
+Na avaliação inicial, a Regressão Logística apresentou ROC-AUC de **0,8413**, F1 de **0,6136** e recall de **0,7834**. O threshold foi posteriormente ajustado de 0,50 para **0,55**, pois esse ponto apresentou o melhor F1 na análise realizada.
+
+O threshold não é tratado como uma constante arbitrária: ele representa a política de priorização de clientes para retenção. A análise também registra precision, recall, F1 e taxa de intervenção para diferentes pontos de corte.
+
+## Aplicação
+
+### Streamlit
+
+Interface para simular um cliente e consultar:
+
+- probabilidade de churn;
+- classificação de churn;
+- nível de risco;
+- threshold utilizado.
+
+Execute:
+
+```bash
+streamlit run app.py
+```
+
+### API
+
+A API FastAPI disponibiliza:
+
+- `GET /health` — health check;
+- `POST /predict` — previsão de churn.
+
+Execute:
+
+```bash
+uvicorn src.api.main:app --reload
+```
+
+A documentação interativa fica disponível em `/docs`.
+
+## Docker
+
+Para construir e executar a aplicação:
+
+```bash
+docker build -t churn-prediction .
+docker run --rm -p 8501:8501 churn-prediction
+```
+
+A interface estará disponível em `http://localhost:8501`.
 
 ## Estrutura
 
 ```text
 ├── data/
-│   ├── raw/              # dataset original (não versionado)
-│   └── processed/        # dados derivados (não versionado)
+│   ├── raw/
+│   └── processed/
 ├── notebooks/
 │   └── 01_eda_baseline.ipynb
 ├── src/
-│   ├── api/              # API FastAPI e schemas
-│   ├── data/             # carregamento e validação dos dados
-│   ├── features/         # preprocessing e feature engineering
-│   ├── models/           # treino, avaliação e inferência
-│   └── utils/             # configuração e reprodutibilidade
-├── models/               # artefatos treinados (não versionados)
-├── tests/                # testes automatizados
-├── docs/                 # Model Card e documentação técnica
-├── pyproject.toml
+│   ├── api/
+│   ├── data/
+│   ├── features/
+│   ├── models/
+│   └── utils/
+├── models/
+├── reports/
+├── tests/
+├── docs/
+├── app.py
+├── Dockerfile
 ├── Makefile
-└── Dockerfile
+└── pyproject.toml
 ```
 
-## Status
+## Qualidade e reprodutibilidade
 
-🚧 Em desenvolvimento.
+O projeto possui CI no GitHub Actions executando lint, testes automatizados, validação dos modelos, análise de threshold e geração dos artefatos. Seeds e parâmetros de divisão/validação são centralizados para favorecer a reprodutibilidade.
 
-## Reprodutibilidade
+## Próximos passos
 
-As decisões de modelagem, seeds, divisão dos dados, métricas e versões das dependências serão registradas no projeto para permitir a reprodução dos resultados.
+- adicionar explicabilidade individual das previsões;
+- publicar a aplicação em um ambiente cloud;
+- incorporar monitoramento de drift e performance do modelo em produção.
